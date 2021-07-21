@@ -1,5 +1,7 @@
+import bcrypt
 from flask import Flask
-from flask import render_template, send_file
+from flask import render_template, send_file, request
+from db import usernameCheck
 app = Flask(__name__)
 @app.route("/")
 def home():
@@ -19,7 +21,50 @@ def login():
     # do authentication for post request
     return send_file("static/login.html")
 
+def checkPassword(password: str):
+    errors = {
+        "length": False,
+        "capital": False,
+        "number": False,
+        "letter": False,
+        "special": False
+    }
+    if len(password) >= 8:
+        errors["length"] = True
+    special = "!@#?%^*"
+    for char in password:
+        if char.isdigit():
+            errors["number"] = True
+        elif char.isalpha():
+            errors["letter"] = True
+        if char.isupper():
+            errors["capital"] = True
+        if char in special:
+            errors["special"] = True
+        return errors
+
+
+
 @app.route("sign-up")
 def sign_up():
-    #Check if valid username / password
-    return send_file("static/signUp.html")
+    # Send form for get request
+    if request.method == "GET":
+        return send_file("static/signUp.html")
+    elif request.method == "POST":
+        #Check if valid username / password
+        username = request.form["username"]
+        password = request.form["password"]
+        # check password validity
+        errors = checkPassword(password)
+        # see if already in db
+        usernameFree = usernameCheck(username)
+        if not usernameFree:
+            errors["username"] = True
+        if all(errors.values):
+            #passed all requirements
+            # add to db
+            # send to account screen
+            return ""
+        else:
+            #send out dict of errors
+            return errors
