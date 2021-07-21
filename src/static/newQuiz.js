@@ -24,15 +24,16 @@ Vue.component('question', {
     </div>`
 })
 
-var app = new Vue({
-    el: "#app",
+var quiz = new Vue({
+    el: "#quiz",
     data: {
         message: "Hello World!",
         questions: [
         ],
         newQuestion: "",
         newAnswer: "",
-        newId: 0
+        newId: 0,
+        quizId: 0
     },
     methods: {
         addQuestion: function () {
