@@ -10,6 +10,47 @@ Vue.component('removeButton', {
     </button>`
 })
 
+Vue.component('choices-input', {
+    data: function () {
+        return {
+            choices: [],
+            newId: 0,
+        }
+    },
+    methods: {
+        addChoice: function () {
+            choice = {
+                id: this.newId,
+                a: ""
+            };
+            this.newId += 1;
+            this.choices.append(choice);
+        },
+        removeChoice: function (id) {
+             for (let i = 0; i < this.choices.length; i++) {
+                if (this.choices[i].id == id)
+                this.choices.splice(i, 1);
+            }
+        }
+    },
+    template: `<div>
+        <div v-for="choice in choices">
+            <input type="text">
+            <button v-on:click="removeChoice(choice.id)">-</button>
+        </div>
+        <button v-on:click="addChoice">+</button>
+        
+    </div>`
+})
+
+Vue.component("choice", {
+    props:["id", "answer", "position"],
+    template: `<li class="choice">
+        <p>{{ position }}</p>
+        <p>{{ answer }}</p>
+    </div>`
+})
+
 Vue.component('question', {
     props: ['question'],
     methods: {
@@ -45,7 +86,8 @@ Vue.component("new-question", {
         <input type="text" v-model="newQuestion" name="newQuestion">
         <label for="answer">Answer:</label>
         <input type="text" v-model="newAnswer" name="newAnswer">
-        <button v-on:click="addQuestion">Add Question</button>
+        <choices-input></choices-input>
+        <button v-on:click="addQuestion" id="addQ">Add Question</button>
     </div>`
 })
 
@@ -95,6 +137,9 @@ var quiz = new Vue({
         changeTitle: function (title) {
             console.log(title)
             this.quizTitle = title;
+        },
+        saveQuiz: function () {
+            return
         }
     }
 })
