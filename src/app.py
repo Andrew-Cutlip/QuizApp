@@ -1,7 +1,6 @@
-import bcrypt
 from flask import Flask
-from flask import render_template, send_file, request
-from db import usernameCheck
+from flask import render_template, send_file, request, redirect
+from db import usernameCheck, matchPassword
 app = Flask(__name__)
 @app.route("/")
 def home():
@@ -19,7 +18,20 @@ def new():
 def login():
     # send to login form for get request
     # do authentication for post request
-    return send_file("static/login.html")
+    if request.method == "GET":
+        return send_file("static/login.html")
+    elif request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        usernameIn = usernameCheck(username)
+        passMatch = matchPassword(username, password)
+        if usernameIn and passMatch:
+            #successfully logged in
+            return redirect("/")
+        # send errors
+        else:
+            error = "Invalid Username and/or Password"
+            return error
 
 def checkPassword(password: str):
     errors = {

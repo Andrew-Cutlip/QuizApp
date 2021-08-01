@@ -1,4 +1,4 @@
-import pymongo
+import pymongo, bcrypt
 from pymongo import MongoClient
 client = MongoClient()
 db = client.db
@@ -19,11 +19,12 @@ def getNextId():
 def addUser(username: str, password: str):
     #Want to hash and salt password
     u_id = getNextId()
-    hash_pass =  password
+    salt = bcrypt.gensalt()
+    hashed =  bcrypt.hashpw(password, salt)
     user = {
         id : u_id,
         username: username,
-        password: hash_pass
+        password: hashed
     }
     return True
 
@@ -35,5 +36,7 @@ def usernameCheck(username: str):
     return True
 
 #Checks if password is same as hashed password
-def checkPassword(username: str, password: str):
-    return False
+def matchPassword(username: str, password: str):
+    user = users.find_one({"username": username})
+    pwd = user["password"]
+    return bcrypt.checkpw(password,pwd)
