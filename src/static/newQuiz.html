@@ -9,8 +9,13 @@
 </head>
 <body>
     <h1>Hello!</h1>
-    <div id="quiz">
-        {{ message }}
+    <div id="quiz" v-on:title="changeTitle">
+        <div v-if='quizTitle != ""'>
+            {{ quizTitle }}
+        </div>
+        <quiz-title
+            v-bind:title="quizTitle">
+        </quiz-title>
         <ul>
             <question
                 v-for="q in questions"
@@ -18,9 +23,7 @@
                 v-bind:key="q.id"
             ></question>
         </ul>
-        <input type="text" v-model="newQuestion">
-        <input type="text" v-model="newAnswer">
-        <button v-on:click="addQuestion">Add Question</button>
+        <new-question></new-question>
     </div>
 
     <script src="/static/newQuiz.js"></script>

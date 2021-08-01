@@ -24,23 +24,63 @@ Vue.component('question', {
     </div>`
 })
 
+Vue.component("new-question", {
+    data: function () {
+        return {
+            newQuestion: "",
+            newAnswer: ""
+        }
+    },
+    methods: {
+        addQuestion: function () {
+            this.$parent.addQuestion(this.newQuestion, this.newAnswer)
+        },
+
+        removeQuestion: function (id) {
+            this.$parent.removeQuestion(id);
+        }
+    },
+    template: `<div>
+        <label for="newQuestion">Question:</label>
+        <input type="text" v-model="newQuestion" name="newQuestion">
+        <label for="answer">Answer:</label>
+        <input type="text" v-model="newAnswer" name="newAnswer">
+        <button v-on:click="addQuestion">Add Question</button>
+    </div>`
+})
+
+Vue.component('quiz-title', {
+    props: ["title"],
+    methods: {
+        changeTitle(title) {
+            // console.log(title);
+            this.$parent.changeTitle(title);
+        }
+    },
+    template: `<div id="quizTitle">
+    <label for="title">Title:</label>
+    <input type="text"
+    v-on:input="changeTitle($event.target.value)"
+    name="title"
+    placeholder="Title">
+    </div>`
+})
+
 var quiz = new Vue({
     el: "#quiz",
     data: {
-        message: "Hello World!",
+        quizTitle: "",
         questions: [
         ],
-        newQuestion: "",
-        newAnswer: "",
         newId: 0,
         quizId: 0
     },
     methods: {
-        addQuestion: function () {
+        addQuestion: function (q,a) {
             this.questions.push({
                 id: this.newId,
-                q: this.newQuestion,
-                a: this.newAnswer
+                q: q,
+                a: a
             });
             this.newQuestion = "";
             this.newAnswer = "";
@@ -51,6 +91,10 @@ var quiz = new Vue({
                 if (this.questions[i].id == id)
                 this.questions.splice(i, 1);
             }
+        },
+        changeTitle: function (title) {
+            console.log(title)
+            this.quizTitle = title;
         }
     }
 })

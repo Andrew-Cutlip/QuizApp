@@ -57,7 +57,7 @@ def checkPassword(password: str):
 
 
 
-@app.route("sign-up")
+@app.route("/sign-up")
 def sign_up():
     # Send form for get request
     if request.method == "GET":
