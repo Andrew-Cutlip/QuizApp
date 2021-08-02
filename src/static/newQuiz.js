@@ -15,16 +15,18 @@ Vue.component('choices-input', {
         return {
             choices: [],
             newId: 0,
+            selected: []
         }
     },
     methods: {
         addChoice: function () {
             choice = {
                 id: this.newId,
-                a: ""
+                a: "",
             };
             this.newId += 1;
-            this.choices.append(choice);
+            // JS uses push not append
+            this.choices.push(choice);
         },
         removeChoice: function (id) {
              for (let i = 0; i < this.choices.length; i++) {
@@ -34,12 +36,28 @@ Vue.component('choices-input', {
         }
     },
     template: `<div>
-        <div v-for="choice in choices">
-            <input type="text">
+        <p>Select the correct answer</p>
+        <div v-for="(choice, index) in choices">
+            <input type="text" v-model="choice.a">
+            <input type="radio" name="correct" v-bind:value="choice.id" v-model="selected">
             <button v-on:click="removeChoice(choice.id)">-</button>
         </div>
         <button v-on:click="addChoice">+</button>
         
+    </div>`
+})
+
+Vue.component("q-type", {
+    template: `<div id="q-type">
+        <label for="type" >Question Type:</label>
+        <select id="type" name="type">
+            <option>Multiple Choice</option>
+            <option>Short-Answer</option>
+            <option>True/False</option>
+            <option>Select All</option>
+            <option>Matching</option>
+            <option>Numeric</option>
+        </select>
     </div>`
 })
 
@@ -69,7 +87,7 @@ Vue.component("new-question", {
     data: function () {
         return {
             newQuestion: "",
-            newAnswer: ""
+            answers: []
         }
     },
     methods: {
@@ -82,10 +100,10 @@ Vue.component("new-question", {
         }
     },
     template: `<div>
+        <q-type></q-type>
         <label for="newQuestion">Question:</label>
         <input type="text" v-model="newQuestion" name="newQuestion">
         <label for="answer">Answer:</label>
-        <input type="text" v-model="newAnswer" name="newAnswer">
         <choices-input></choices-input>
         <button v-on:click="addQuestion" id="addQ">Add Question</button>
     </div>`
@@ -108,10 +126,27 @@ Vue.component('quiz-title', {
     </div>`
 })
 
+Vue.component("topic", {
+    props: ["topic"],
+    methods: {
+        changeTopic(topic) {
+            this.$parent.changeTopic(topic);
+        }
+    },
+    template: `<div id="q-topic">
+    <label for="topic">Topic:</label>
+    <input type="text"
+    v-on:input="changeTopic($event.target.value)"
+    name="topic"
+    placeholder="Topic">
+    </div>`
+})
+
 var quiz = new Vue({
     el: "#quiz",
     data: {
         quizTitle: "",
+        topic: "",
         questions: [
         ],
         newId: 0,
@@ -137,6 +172,9 @@ var quiz = new Vue({
         changeTitle: function (title) {
             console.log(title)
             this.quizTitle = title;
+        },
+        changeTopic: function (topic) {
+            this.topic = topic;
         },
         saveQuiz: function () {
             return
